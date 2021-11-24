@@ -5,6 +5,7 @@
 #define NICLA_SENSE_UUID(val) ("6fbe1da7-" val "-44de-92c4-bb6e04fb0212")
 
 const int VERSION = 0x00000000;
+const float sampling_freq_motion = 100.0f;
 
 BLEService service(NICLA_SENSE_UUID("0000"));
 BLEUnsignedIntCharacteristic versionCharacteristic(NICLA_SENSE_UUID("1001"), BLERead);
@@ -13,8 +14,8 @@ BLECharacteristic gyroscopeCharacteristic(NICLA_SENSE_UUID("3002"), BLENotify, 3
 BLECharacteristic magneticFieldCharacteristic(NICLA_SENSE_UUID("3003"), BLENotify, 3 * sizeof(float));  // Array of 3 floats, uT
 BLEFloatCharacteristic pressureCharacteristic(NICLA_SENSE_UUID("4001"), BLERead);                       // Float, kPa
 BLEFloatCharacteristic temperatureCharacteristic(NICLA_SENSE_UUID("4002"), BLERead);                    // Float, Celcius
-BLEFloatCharacteristic humidityCharacteristic(NICLA_SENSE_UUID("4003"), BLERead);                       // Float, Percentage
-BLECharacteristic orientationCharacteristic(NICLA_SENSE_UUID("5001"), BLENotify, 4 * sizeof(int16_t));  // Array of 4 signed 16 bit integers, unit Quaternion
+BLEFloatCharacteristic humidityCharacteristic(NICLA_SENSE_UUID("4003"), BLERead);                       // Float, Relative humidity
+BLECharacteristic orientationCharacteristic(NICLA_SENSE_UUID("5001"), BLENotify, 4 * sizeof(float));    // Array of 4 signed floats, unit Quaternion
 BLECharacteristic rgbLedCharacteristic(NICLA_SENSE_UUID("6001"), BLERead | BLEWrite, 3 * sizeof(byte)); // Array of 3 bytes, RGB
 
 // String to calculate the local and device name
@@ -23,10 +24,11 @@ String name;
 SensorXYZ accel(SENSOR_ID_ACC);
 SensorXYZ gyro(SENSOR_ID_GYRO);
 SensorXYZ mag(SENSOR_ID_MAG);
-SensorQuaternion quat(SENSOR_ID_RV);
+SensorQuaternion quat(SENSOR_ID_GAMERV);
 Sensor baro(SENSOR_ID_BARO);
 Sensor temp(SENSOR_ID_TEMP);
 Sensor hum(SENSOR_ID_HUM);
+
 
 void setup()
 {
@@ -45,7 +47,7 @@ void setup()
       ;
   }
 
-  if (!accel.begin(25.0f))
+  if (!accel.begin(sampling_freq_motion))
   {
     Serial.println("Failed to initialize Accelerometer!");
 
@@ -53,7 +55,7 @@ void setup()
       ;
   }
 
-  if (!gyro.begin(25.0f))
+  if (!gyro.begin(sampling_freq_motion))
   {
     Serial.println("Failed to initialize Gyroscope!");
 
@@ -61,7 +63,7 @@ void setup()
       ;
   }
 
-  if (!mag.begin(25.0f))
+  if (!mag.begin(sampling_freq_motion))
   {
     Serial.println("Failed to initialize Magnetometer!");
 
@@ -69,7 +71,7 @@ void setup()
       ;
   }
 
-  if (!quat.begin(25.0f))
+  if (!quat.begin(sampling_freq_motion))
   {
     Serial.println("Failed to initialize Quaternion virtual sensor!");
 
@@ -184,7 +186,7 @@ void loop()
 
     if (orientationCharacteristic.subscribed())
     {
-      int16_t quaternion[4] = {quat.w(), quat.x(), quat.y(), quat.z()};
+      float quaternion[4] = {quat.w(), quat.x(), quat.y(), quat.z()};
 
       orientationCharacteristic.writeValue(quaternion, sizeof(quaternion));
     }

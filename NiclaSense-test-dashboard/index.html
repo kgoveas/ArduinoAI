@@ -99,6 +99,10 @@
         width: 192px;
         height: 81px;
       }
+      .squaregraph {
+        width: 192px;
+        height: 177px;
+      }
 
       #color-picker-container {
         display: flex;
@@ -111,7 +115,8 @@
     <div class="container">
       <div class="label">
         &nbsp;&nbsp;IMPORTANT - first run the BHYFirmwareUpdate sketch and then
-        upload the Nicla Sense sketch to the Nicla Sense ME. The 3D orientation is incorrect. TODO!<br />
+        upload the Nicla Sense sketch to the Nicla Sense ME. The 3D orientation
+        is a 180 degree yaw rotated view<br />
       </div>
       <div class="status widget">
         <button id="bigButton"></button>
@@ -124,40 +129,40 @@
         <div class="label">&#128230;3D</div>
       </div>
 
-      <div class="double widget">
-        <div class="label">&#128640; Accelerometer</div>
-        <div id="accelerometer" class="doublegraph"></div>
-      </div>
-
-      <div class="square widget">
-        <div class="label">&#128171; Gyroscope</div>
-        <div id="gyroscope" class="graph"></div>
-      </div>
-
       <div class="square widget">
         <div class="label">&#128161; RGB LED control</div>
         <div id="color-picker-container" class="graph"></div>
       </div>
 
-      <div class="short widget">
+      <div class="square widget">
         <div class="label">&#127777; Temperature -</div>
         <div class="label" id="temperature-value"></div>
         <div class="label">&deg;C</div>
-        <div class="shortgraph" id="temperature"></div>
+        <div class="squaregraph" id="temperature"></div>
       </div>
 
-      <div class="short widget">
+      <div class="square widget">
         <div class="label">&#128167; Humidity -</div>
         <div class="label" id="humidity-value"></div>
         <div class="label">%</div>
-        <div class="shortgraph" id="humidity"></div>
+        <div class="squaregraph" id="humidity"></div>
       </div>
 
-      <div class="short widget">
+      <div class="double widget">
+        <div class="label">&#128640; Accelerometer</div>
+        <div id="accelerometer" class="doublegraph"></div>
+      </div>
+
+      <div class="double widget">
+        <div class="label">&#128171; Gyroscope</div>
+        <div id="gyroscope" class="doublegraph"></div>
+      </div>
+
+      <div class="square widget">
         <div class="label">&#9925; Pressure -</div>
         <div class="label" id="pressure-value"></div>
         <div class="label">kPa</div>
-        <div class="shortgraph" id="pressure"></div>
+        <div class="squaregraph" id="pressure"></div>
       </div>
     </div>
   </body>
@@ -194,7 +199,7 @@ enable the highlighted flag, and restart Chrome for now.
       quaternion: {
         uuid: "6fbe1da7-5001-44de-92c4-bb6e04fb0212",
         properties: ["BLENotify"],
-        structure: ["Int16", "Int16", "Int16", "Int16"],
+        structure: ["Float32", "Float32", "Float32", "Float32"],
         data: { Qw: [], Qx: [], Qy: [], Qz: [] },
       },
       led: {
@@ -457,8 +462,8 @@ enable the highlighted flag, and restart Chrome for now.
       renderer.setPixelRatio(4);
       container.appendChild(renderer.domElement);
       loader.load(
-        "models/nano33ble.glb",
-        // called when the Arduinio model is loaded
+        "models/NiclaMockUp.glb",
+        // called when the Arduino model is loaded
         function (gltf) {
           // Model
           arduinoModel = gltf.scene;
@@ -488,7 +493,6 @@ enable the highlighted flag, and restart Chrome for now.
 
           // Camera
           camera.position.set(0, 40, 0);
-          //camera.rotation.y = Math.PI; // 180
           camera.lookAt(new THREE.Vector3(0, 0, 0));
           renderer.render(scene, camera);
         }
@@ -585,10 +589,12 @@ enable the highlighted flag, and restart Chrome for now.
       var qx = BLEsense["quaternion"].data.Qx.latest();
       var qy = BLEsense["quaternion"].data.Qy.latest();
       var qz = BLEsense["quaternion"].data.Qz.latest();
-      arduinoModel.quaternion.w = qw / 16384.0;
-      arduinoModel.quaternion.x = qx / 16384.0;
-      arduinoModel.quaternion.y = qy / 16384.0;
-      arduinoModel.quaternion.z = qz / 16384.0;
+      var quat = new THREE.Quaternion(qx, qy, qz, qw);
+      quat.normalize();
+      arduinoModel.quaternion.w = quat.w;
+      arduinoModel.quaternion.x = -quat.x;
+      arduinoModel.quaternion.y = -quat.y;
+      arduinoModel.quaternion.z = -quat.z;
       renderer.render(scene, camera);
     }
 
