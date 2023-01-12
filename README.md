@@ -16,3 +16,4 @@ This is a temporary website linking some of the demos and tools we build to supp
 
 [BLE Sense Demo - Web Dashboard](https://arduino.github.io/ArduinoAI/BLESense-test-dashboard) (Chrome only)
 
+[Nicla Sense Demo - Web Dashboard](https://arduino.github.io/ArduinoAI/NiclaSense-test-dashboard) (Chrome only)
