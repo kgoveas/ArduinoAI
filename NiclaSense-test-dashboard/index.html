@@ -396,15 +396,15 @@ enable the highlighted flag, and restart Chrome for now.
 
     // Graphing
     const colors = [
-      "#FF355E",
-      "#FD5B20",
-      "#FF6037",
-      "#FF9966",
-      "#FF9933",
-      "#FFCC33",
-      "#FFFF66",
-      "#FFFF66",
-      "#CCFF00",
+      "#FF2130",  // accel x, y, z
+      "#2BE07C",  
+      "#1F86ED",
+      "#FF2164",  // gyro x, y, z
+      "#2BE0B0",
+      "#7C57F7",
+      "#F24D1B",  // temp 
+      "#9DF21D",  // hum 
+      "#5EBCFF",  // press
       "#66FF66",
       "#AAF0D1",
       "#50BFE6",
@@ -413,6 +413,7 @@ enable the highlighted flag, and restart Chrome for now.
       "#FF00CC",
       "#FF00CC",
     ];
+
     var colorIndex = 0;
     function initGraph(sensor) {
       var title = sensor;
